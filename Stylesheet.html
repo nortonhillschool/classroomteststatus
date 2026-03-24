@@ -1,0 +1,268 @@
+/* General Layout */
+html, body {
+  overflow-y: hidden;
+  margin: 0;
+  padding: 0;
+  font-family: 'Quicksand', Arial, sans-serif;
+  background: linear-gradient(45deg, #e59e59, #ebc461);
+  min-height: 150vh; /* Ensures background stretches */
+}
+
+/* Header Title */
+#headerTitle {
+  display: flex;
+  justify-content: flex-end;  /* Right-align the contents */
+  align-items: center;
+  padding: 0 20px;
+  margin: 0;
+  font-size: clamp(1.5rem, 3.5vw, 3rem);
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+#headerTitle:hover {
+  text-decoration: underline;
+}
+
+/* Highlight box */
+.do-now-highlight {
+  display: inline-block;
+  font-weight: 700;
+  font-size: clamp(1.2rem, 2.5vw, 2.4rem);
+  white-space: nowrap;
+  padding: 10px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  line-height: 1.2;
+}
+
+.do-now-highlight strong {
+  font-weight: 700;
+}
+
+/* Status message */
+.status {
+  margin: 5px 20px;
+  font-weight: bold;
+}
+
+/* Controls */
+.control-bar {
+  display: flex;
+  margin: 0 20px 10px;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.completion-count {
+  text-align: center;
+  margin-top: 2rem;
+  font-weight: bold;
+  font-size: 2.5rem;       /* Larger than header */
+  color: #5a5a5a	;          /* Optional: matches Do now styling */
+}
+
+
+
+
+/* List of names */
+.list-area {
+  display: flex;
+  gap: 4%;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 0 20px;
+}
+
+/* Columns for student names */
+.table-container {
+  flex: 1 1 22%;
+  min-width: 200px;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.pulsing {
+  animation: pulse 0.6s ease-in-out infinite;
+}
+
+
+/* Dropdown and button styling */
+select,
+button {
+  padding: 6px 12px;
+  font-size: 14px;
+  height: 36px;
+  line-height: 1.2;
+}
+
+button {
+  cursor: pointer;
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Table structure */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 12px;
+}
+
+td {
+  border: none;
+}
+
+/* Name cell as a card */
+td.name {
+  background-color: #ef5967;
+  color: black;
+  padding: 12px 16px;
+  font-size: 2em;
+  cursor: pointer;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.1s ease;
+}
+
+td.name:hover {
+  transform: scale(1.01);
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 10px 20px 0 20px;
+  margin-bottom: 10px;
+}
+
+#timerBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#timerCanvas {
+  width: 60px;
+  height: 60px;
+}
+
+.timer-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 140px; /* ⬅️ Keeps controls from shifting */
+}
+
+#timerDisplay {
+  font-size: 2.5em;
+  font-weight: bold;
+  font-family: 'Quicksand', Arial, sans-serif;
+  width: 120px;          /* Fixed width wide enough for "00:00" to "99:59" */
+  text-align: center;    /* Center the time */
+  transition: color 0.3s ease;
+}
+
+
+#arc {
+  transition: stroke 0.3s ease;
+}
+
+
+#timerControls {
+  display: flex;
+  gap: 6px;
+}
+
+#timerControls button {
+  font-size: 1.2em;
+  padding: 6px 10px;
+  min-width: 36px;
+  background-color: black;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+
+#timerMinutesContainer {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+#timerMinutes {
+  width: 48px;
+  font-size: 1em;
+  padding: 4px;
+}
+
+#timerInputGroup input.timer-input {
+  width: 3ch;
+  text-align: right;
+  font-size: 1rem;
+  padding: 2px 4px;
+}
+
+#timerInputGroup label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.9em;
+}
+
+#timerInputGroup input {
+  width: 48px;
+  padding: 4px;
+  font-size: 1em;
+}
+
+
+.assignment-selectors select {
+  min-width: 220px;
+}
+
+td.name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.student-name {
+  flex: 1;
+}
+
+.pill-group {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.status-pill {
+  display: inline-block;
+  min-width: 24px;
+  text-align: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8em;
+  font-weight: 700;
+  color: white;
+}
+
+.status-pill.complete {
+  background: #2f9e44;
+}
+
+.status-pill.incomplete {
+  background: #c92a2a;
+}
