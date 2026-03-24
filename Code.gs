@@ -353,7 +353,7 @@ function getStudentStatusesForAssignments(classId, roster, spellingAssignmentId,
         .map(s => [s.profile.emailAddress.toLowerCase().trim(), String(s.userId)])
     );
 
-    return roster.map(student => {
+    const statuses = roster.map(student => {
       const email = String(student.email || '').toLowerCase().trim();
       const userId = userIdByEmail.get(email);
 
@@ -364,6 +364,20 @@ function getStudentStatusesForAssignments(classId, roster, spellingAssignmentId,
         classroomCompleted: userId ? !!classroomStatuses.get(userId) : false
       };
     });
+
+    const unmatchedRosterEmails = statuses
+      .map(s => s.email)
+      .filter(email => email && !userIdByEmail.has(email));
+
+    if (unmatchedRosterEmails.length) {
+      Logger.log(
+        '[getStudentStatusesForAssignments] roster emails not found in Classroom student list for classId=%s: %s',
+        resolvedClassId,
+        unmatchedRosterEmails.join(', ')
+      );
+    }
+
+    return statuses;
   } catch (err) {
     throw new Error('Failed to load student statuses: ' + err.message);
   }
