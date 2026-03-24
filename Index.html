@@ -226,11 +226,13 @@
 
     document.getElementById('spellingAssignmentDropdown').addEventListener('change', event => {
       selectedSpellingId = event.target.value;
+      updateSelectionUI();
       refreshStudentStatuses();
     });
 
     document.getElementById('classroomAssignmentDropdown').addEventListener('change', event => {
       selectedClassroomTestId = event.target.value;
+      updateSelectionUI();
       refreshStudentStatuses();
     });
   });
@@ -302,6 +304,7 @@
     selectedClassroomId = (selection.classroomId || '').trim();
     hiddenManually.clear();
     resetAssignments();
+    updateSelectionUI();
 
     if (!selectedClassroomId) {
       document.getElementById('status').textContent = `No classroom ID available for ${selection.shortName}`;
@@ -351,13 +354,35 @@
       .getClassesForTeacher(teacher);
   }
 
+
+  function updateSelectionUI() {
+    const hasClass = Boolean(selectedClassroomId);
+    const hasSpelling = Boolean(selectedSpellingId);
+    const hasClassroomTest = Boolean(selectedClassroomTestId);
+    const allSelected = hasClass && hasSpelling && hasClassroomTest;
+
+    const teacherShouldStayHidden = Boolean(teacherFromUrl);
+    const classShouldStayHidden = Boolean(teacherFromUrl && classNameFromUrl);
+
+    document.getElementById('teacherDropdownContainer').style.display = (allSelected || teacherShouldStayHidden) ? 'none' : '';
+    document.getElementById('dropdownContainer').style.display = (allSelected || classShouldStayHidden) ? 'none' : '';
+    document.getElementById('assignmentSelectors').style.display = hasClass && !allSelected ? 'flex' : 'none';
+
+    if (allSelected) {
+      document.getElementById('headerTitle').textContent = 'Test conditions, absolute silence';
+    } else if (hasClass) {
+      document.getElementById('headerTitle').textContent = 'Select Spelling test and Classroom test';
+    } else {
+      document.getElementById('headerTitle').textContent = 'Please select a class.';
+    }
+  }
+
   function loadAssignments(classroomId) {
     google.script.run
       .withSuccessHandler(assignments => {
         assignmentOptions = assignments || [];
         renderAssignmentDropdowns();
-        document.getElementById('assignmentSelectors').style.display = 'flex';
-        document.getElementById('headerTitle').textContent = 'Select Spelling test and Classroom test';
+        updateSelectionUI();
         document.getElementById('status').textContent = '';
       })
       .withFailureHandler(err => {
@@ -384,13 +409,14 @@
     selectedSpellingId = '';
     selectedClassroomTestId = '';
     studentStatuses = [];
+    updateSelectionUI();
     renderBalancedList();
   }
 
   function refreshStudentStatuses() {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
 
-    if (!selectedClassroomId || !selectedSpellingId || !selectedClassroomTestId) {
+    if (!selectedClassroomId || (!selectedSpellingId && !selectedClassroomTestId)) {
       studentStatuses = [];
       renderBalancedList();
       return;
@@ -421,8 +447,10 @@
   function resetAssignments() {
     if (refreshIntervalId) clearInterval(refreshIntervalId);
     refreshIntervalId = null;
-    document.getElementById('assignmentSelectors').style.display = 'none';
+    selectedSpellingId = '';
+    selectedClassroomTestId = '';
     studentStatuses = [];
+    updateSelectionUI();
     renderBalancedList();
   }
 
@@ -430,7 +458,7 @@
     const container = document.querySelector('.list-area');
     container.innerHTML = '';
 
-    if (!selectedSpellingId || !selectedClassroomTestId) {
+    if (!selectedSpellingId && !selectedClassroomTestId) {
       completionCountEl.textContent = '';
       return;
     }
@@ -473,8 +501,8 @@
         const pillsWrap = document.createElement('div');
         pillsWrap.className = 'pill-group';
 
-        pillsWrap.appendChild(buildPill('S', student.spellingCompleted));
-        pillsWrap.appendChild(buildPill('T', student.classroomCompleted));
+        if (selectedSpellingId) pillsWrap.appendChild(buildPill('S', student.spellingCompleted));
+        if (selectedClassroomTestId) pillsWrap.appendChild(buildPill('T', student.classroomCompleted));
 
         cell.appendChild(nameSpan);
         cell.appendChild(pillsWrap);
@@ -489,8 +517,12 @@
       container.appendChild(col);
     });
 
-    const bothCompleted = visible.filter(s => s.spellingCompleted && s.classroomCompleted).length;
-    completionCountEl.textContent = `${bothCompleted} of ${visible.length} completed both`;
+    if (selectedSpellingId && selectedClassroomTestId) {
+      const bothCompleted = visible.filter(s => s.spellingCompleted && s.classroomCompleted).length;
+      completionCountEl.textContent = `${bothCompleted} of ${visible.length} completed both`;
+    } else {
+      completionCountEl.textContent = '';
+    }
   }
 
   function buildPill(label, completed) {
