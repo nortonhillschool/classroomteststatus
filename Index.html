@@ -65,6 +65,7 @@
     <select id="spellingAssignmentDropdown"></select>
     <label for="classroomAssignmentDropdown">Classroom test:</label>
     <select id="classroomAssignmentDropdown"></select>
+    <button id="btnHideDropdowns" type="button">Hide dropdowns</button>
   </div>
 
   <!-- Columns -->
@@ -196,6 +197,7 @@
   let studentStatuses = [];
   let refreshIntervalId = null;
   let hiddenManually = new Set();
+  let forceHideDropdowns = false;
 
   const completionCountEl = document.getElementById('completion-count');
 
@@ -234,6 +236,11 @@
       selectedClassroomTestId = event.target.value;
       updateSelectionUI();
       refreshStudentStatuses();
+    });
+
+    document.getElementById('btnHideDropdowns').addEventListener('click', () => {
+      forceHideDropdowns = true;
+      updateSelectionUI();
     });
   });
 
@@ -303,6 +310,7 @@
 
     selectedClassroomId = (selection.classroomId || '').trim();
     hiddenManually.clear();
+    forceHideDropdowns = false;
     resetAssignments();
     updateSelectionUI();
 
@@ -360,15 +368,16 @@
     const hasSpelling = Boolean(selectedSpellingId);
     const hasClassroomTest = Boolean(selectedClassroomTestId);
     const allSelected = hasClass && hasSpelling && hasClassroomTest;
+    const shouldHideControls = allSelected || forceHideDropdowns;
 
     const teacherShouldStayHidden = Boolean(teacherFromUrl);
     const classShouldStayHidden = Boolean(teacherFromUrl && classNameFromUrl);
 
-    document.getElementById('teacherDropdownContainer').style.display = (allSelected || teacherShouldStayHidden) ? 'none' : '';
-    document.getElementById('dropdownContainer').style.display = (allSelected || classShouldStayHidden) ? 'none' : '';
-    document.getElementById('assignmentSelectors').style.display = hasClass && !allSelected ? 'flex' : 'none';
+    document.getElementById('teacherDropdownContainer').style.display = (shouldHideControls || teacherShouldStayHidden) ? 'none' : '';
+    document.getElementById('dropdownContainer').style.display = (shouldHideControls || classShouldStayHidden) ? 'none' : '';
+    document.getElementById('assignmentSelectors').style.display = hasClass && !shouldHideControls ? 'flex' : 'none';
 
-    if (allSelected) {
+    if (allSelected || forceHideDropdowns) {
       document.getElementById('headerTitle').textContent = 'Test conditions, absolute silence';
     } else if (hasClass) {
       document.getElementById('headerTitle').textContent = 'Select Spelling test and Classroom test';
@@ -408,6 +417,7 @@
 
     selectedSpellingId = '';
     selectedClassroomTestId = '';
+    forceHideDropdowns = false;
     studentStatuses = [];
     updateSelectionUI();
     renderBalancedList();
@@ -449,6 +459,7 @@
     refreshIntervalId = null;
     selectedSpellingId = '';
     selectedClassroomTestId = '';
+    forceHideDropdowns = false;
     studentStatuses = [];
     updateSelectionUI();
     renderBalancedList();
